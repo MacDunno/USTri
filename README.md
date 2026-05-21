@@ -29,20 +29,6 @@ It contains three stages:
 - **Stage II — USpec**: lightweight dataset-specific specialization with frozen backbone + compact heads.
 - **Stage III — USAgent**: an agentic inference layer that routes tasks, calls specialists as tools, and renders structured reports.
 
-## 📊 Main Results
-
-On the **FMC UIA** unseen-domain validation set, **USpec** achieves the best overall performance reported in the paper:
-
-| Task | Metric | USpec |
-|---|---:|---:|
-| Segmentation | DSC ↑ | **0.8980** |
-| Segmentation | HD ↓ | **27.21** |
-| Classification | AUC ↑ | **0.9352** |
-| Classification | F1 ↑ | **0.8593** |
-| Classification | MCC ↑ | **0.7675** |
-| Detection | IoU ↑ | **0.8000** |
-| Regression | MRE ↓ | **18.42** |
-
 
 ## 🚀 Getting Started
 
@@ -55,10 +41,23 @@ cd USTri
 
 ### 2) Install dependencies
 
-Create your environment and install the packages used in the codebase:
+Create a clean environment and install the packages used in the codebase:
 
 ```bash
-pip install torch torchvision torchaudio
+# Option A: conda
+conda create -n ustri python=3.10 -y
+conda activate ustri
+```
+
+Install PyTorch for CUDA 12.1:
+
+```bash
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
+
+Install the remaining dependencies:
+
+```bash
 pip install albumentations opencv-python pandas numpy tqdm scikit-learn SimpleITK
 pip install tensorboard segmentation-models-pytorch
 ```
@@ -72,6 +71,12 @@ data/train/
 ```
 
 Please organize the data following the official **FMC UIA** format, including the CSV metadata files used by the provided scripts.
+
+## 📦 Pretrained Weights
+
+- **USpec**: [Google Drive](https://drive.google.com/file/d/1koHfqj1ih8qb9nhd5u8h7ViIDkSayaic/view?usp=sharing)
+- Place the downloaded file in the project root as `USpec.pth`.
+- **USGen**: remove all task-specific heads from `USpec` to obtain the universal generalist backbone.
 
 ## 🏋️ Training
 
@@ -88,6 +93,8 @@ python train_phase2_single_dataset.py --task-id IUGC
 ```
 
 You can replace `IUGC` with any supported task id defined in `model_factory.py`.
+
+If you only want to train on your own dataset, you can directly finetune Stage II using the provided USGen weights, and adjust the dataset/task settings in [model_factory.py](model_factory.py).
 
 ## 📈 Evaluation
 
